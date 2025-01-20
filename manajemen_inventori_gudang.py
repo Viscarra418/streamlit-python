@@ -122,5 +122,5 @@ def main():
     # Menyimpan dataset ke CSV saat program selesai
     inventory.to_csv('inventory.csv', index=False)
 
-if _name_ == "_main_":
-    main()
+if __name__ == "_main_":
+    main()
