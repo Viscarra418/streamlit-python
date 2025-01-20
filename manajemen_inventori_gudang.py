@@ -122,7 +122,6 @@ def main():
             remove_product(product_id)
 
     # Menyimpan dataset ke CSV saat program selesai
-    inventory.to_csv('inventory.csv', index=False)
 
 if __name__ == "__main__":
     main()
