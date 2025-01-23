@@ -64,54 +64,50 @@ def login_admin():
     if st.button("Login"):
        if username == "admin" and password == "admin123":
           st.success("Login admin berhasil!")
-          return True
+          st.session_state['logged_in'] = True
        else:
           st.error("Login admin gagal.")
-          return False
 
 def menu_admin():
-    while True:
-        st.write("\nMenu Admin:")
-        pilihan = st.radio("Pilihan Anda:", ["List Langganan", "Tambah Menu", "Edit Menu", "Hapus Menu", "Logout"])
+    st.write("\nMenu Admin:")
+    pilihan = st.radio("Pilihan Anda:", ["List Langganan", "Tambah Menu", "Edit Menu", "Hapus Menu", "Logout"])
 
-        if pilihan == "List Langganan":
-            st.write("Daftar Langganan:")
-            for subscriber in subscribers:
-                st.write(f"- {subscriber['name']} ({subscriber['email']})")
-        
-        elif pilihan == "Tambah Menu":
-            nama_makanan = st.text_input("Nama Makanan Baru:")
-            harga_makanan = st.number_input("Harga Makanan Baru:", min_value=0, step=1000)
-            if st.button("Tambah"):
-                if nama_makanan and harga_makanan:
-                    menu[nama_makanan] = harga_makanan
-                    st.success(f"{nama_makanan} berhasil ditambahkan ke menu!")
-                else:
-                    st.error("Nama dan harga makanan harus diisi.")
-        
-        elif pilihan == "Edit Menu":
-            nama_makanan = st.selectbox("Pilih Makanan yang Akan Diedit:", list(menu.keys()))
-            harga_baru = st.number_input("Harga Baru:", min_value=0, step=1000)
-            if st.button("Edit"):
-                if nama_makanan in menu:
-                    menu[nama_makanan] = harga_baru
-                    st.success(f"Harga {nama_makanan} berhasil diubah!")
-                else:
-                    st.error("Makanan tidak ditemukan di menu.")
-        
-        elif pilihan == "Hapus Menu":
-            nama_makanan = st.selectbox("Pilih Makanan yang Akan Dihapus:", list(menu.keys()))
-            if st.button("Hapus"):
-                if nama_makanan in menu:
-                    del menu[nama_makanan]
-                    st.success(f"{nama_makanan} berhasil dihapus dari menu!")
-                else:
-                    st.error("Makanan tidak ditemukan di menu.")
-        
-        elif pilihan == "Logout":
-            break
-        else:
-            st.error("Pilihan tidak valid.")
+    if pilihan == "List Langganan":
+        st.write("Daftar Langganan:")
+        for subscriber in subscribers:
+            st.write(f"- {subscriber['name']} ({subscriber['email']})")
+    
+    elif pilihan == "Tambah Menu":
+        nama_makanan = st.text_input("Nama Makanan Baru:")
+        harga_makanan = st.number_input("Harga Makanan Baru:", min_value=0, step=1000)
+        if st.button("Tambah"):
+            if nama_makanan and harga_makanan:
+                menu[nama_makanan] = harga_makanan
+                st.success(f"{nama_makanan} berhasil ditambahkan ke menu!")
+            else:
+                st.error("Nama dan harga makanan harus diisi.")
+    
+    elif pilihan == "Edit Menu":
+        nama_makanan = st.selectbox("Pilih Makanan yang Akan Diedit:", list(menu.keys()))
+        harga_baru = st.number_input("Harga Baru:", min_value=0, step=1000)
+        if st.button("Edit"):
+            if nama_makanan in menu:
+                menu[nama_makanan] = harga_baru
+                st.success(f"Harga {nama_makanan} berhasil diubah!")
+            else:
+                st.error("Makanan tidak ditemukan di menu.")
+    
+    elif pilihan == "Hapus Menu":
+        nama_makanan = st.selectbox("Pilih Makanan yang Akan Dihapus:", list(menu.keys()))
+        if st.button("Hapus"):
+            if nama_makanan in menu:
+                del menu[nama_makanan]
+                st.success(f"{nama_makanan} berhasil dihapus dari menu!")
+            else:
+                st.error("Makanan tidak ditemukan di menu.")
+    
+    elif pilihan == "Logout":
+        st.session_state['logged_in'] = False
 
 # Program utama
 
@@ -129,8 +125,11 @@ if pilihan == "Pengguna":
     tampilkan_pesanan(pesanan)  # Memanggil fungsi untuk menampilkan pesanan
 
 elif pilihan == "Admin":
-    st.header("Login Admin")
-    if login_admin():  # Memanggil fungsi untuk login admin
-        menu_admin()  # Memanggil fungsi menu admin jika login berhasil
+    if 'logged_in' not in st.session_state:
+        st.session_state['logged_in'] = False
+
+    if not st.session_state['logged_in']:
+        st.header("Login Admin")
+        login_admin()  # Memanggil fungsi untuk login admin
     else:
-        st.error("Login gagal.")
+        menu_admin()  # Memanggil fungsi menu admin jika login berhasil
