@@ -34,18 +34,30 @@ def tampilkan_menu():
         st.write(f"- {item}: Rp{harga:,}")
 
 def pesan_makanan():
+    st.header("Pesan Makanan")
+    nama_pelanggan = st.text_input("Nama Pelanggan:")
+    if not nama_pelanggan:
+        st.warning("Silakan masukkan nama pelanggan.")
+        return None, None
+
     tampilkan_menu()
     pesanan = {}
     while True:
-        item = st.text_input("Masukkan nama makanan (atau ketik 'selesai' untuk selesai): ", key=f"item_{len(pesanan)}")
+        item = st.text_input("Masukkan nama makanan (atau ketik 'selesai' untuk selesai): ", key=f"item_{len(pesanan)}_{np.random.randint(1000)}")
         if item.lower() == "selesai":
             break
         if item in st.session_state['menu']:
-            jumlah = st.number_input(f"Masukkan jumlah {item}:", min_value=1, step=1, key=f"jumlah_{item}")
+            jumlah = st.number_input(f"Masukkan jumlah {item}:", min_value=1, step=1, key=f"jumlah_{item}_{np.random.randint(1000)}")
             pesanan[item] = jumlah
         else:
             st.error("Makanan tidak ditemukan di menu.")
-    return pesanan
+    
+    metode_pembayaran = st.selectbox("Pilih Metode Pembayaran:", ["Tunai", "Kartu Kredit", "Transfer Bank", "E-Wallet"])
+    if not metode_pembayaran:
+        st.warning("Silakan pilih metode pembayaran.")
+        return None, None
+
+    return nama_pelanggan, pesanan, metode_pembayaran
 
 def hitung_total_harga(pesanan):
     total_harga = 0
@@ -53,12 +65,13 @@ def hitung_total_harga(pesanan):
         total_harga += st.session_state['menu'][item] * jumlah
     return total_harga
 
-def tampilkan_pesanan(pesanan):
-    st.write("Pesanan Anda:")
+def tampilkan_pesanan(nama_pelanggan, pesanan, metode_pembayaran):
+    st.write(f"Pesanan Anda, {nama_pelanggan}:")
     for item, jumlah in pesanan.items():
         st.write(f"- {item} x {jumlah}")
     total_harga = hitung_total_harga(pesanan)
     st.write(f"Total Harga: Rp{total_harga:,}")
+    st.write(f"Metode Pembayaran: {metode_pembayaran}")
 
 def login_admin():
     username = st.text_input("Username:")
@@ -120,11 +133,11 @@ if pilihan == "Pengguna":
     st.header("Menu Makanan")
     tampilkan_menu()
 
-    st.header("Pesan Makanan")
-    pesanan = pesan_makanan()  # Memanggil fungsi untuk memesan makanan
+    nama_pelanggan, pesanan, metode_pembayaran = pesan_makanan()  # Memanggil fungsi untuk memesan makanan
 
-    st.header("Detail Pesanan")
-    tampilkan_pesanan(pesanan)  # Memanggil fungsi untuk menampilkan pesanan
+    if pesanan:
+        st.header("Detail Pesanan")
+        tampilkan_pesanan(nama_pelanggan, pesanan, metode_pembayaran)  # Memanggil fungsi untuk menampilkan pesanan
 
 elif pilihan == "Admin":
     if 'logged_in' not in st.session_state:
