@@ -20,6 +20,12 @@ menu = {
     "Jus Jeruk": 10000,
 }
 
+subscribers = [
+    {"name": "Budi", "email": "budi@example.com"},
+    {"name": "Siti", "email": "siti@example.com"},
+    {"name": "Andi", "email": "andi@example.com"},
+]
+
 def tampilkan_menu():
     st.write("Menu Katering:")
     for item, harga in menu.items():
@@ -66,17 +72,42 @@ def login_admin():
 def menu_admin():
     while True:
         st.write("\nMenu Admin:")
-        pilihan = st.radio("Pilihan Anda:", ["Tambah Menu", "Edit Menu", "Hapus Menu", "Logout"])
+        pilihan = st.radio("Pilihan Anda:", ["List Langganan", "Tambah Menu", "Edit Menu", "Hapus Menu", "Logout"])
 
-        if pilihan == "Tambah Menu":
-            # Tambahkan logika untuk menambah menu
-            pass
+        if pilihan == "List Langganan":
+            st.write("Daftar Langganan:")
+            for subscriber in subscribers:
+                st.write(f"- {subscriber['name']} ({subscriber['email']})")
+        
+        elif pilihan == "Tambah Menu":
+            nama_makanan = st.text_input("Nama Makanan Baru:")
+            harga_makanan = st.number_input("Harga Makanan Baru:", min_value=0, step=1000)
+            if st.button("Tambah"):
+                if nama_makanan and harga_makanan:
+                    menu[nama_makanan] = harga_makanan
+                    st.success(f"{nama_makanan} berhasil ditambahkan ke menu!")
+                else:
+                    st.error("Nama dan harga makanan harus diisi.")
+        
         elif pilihan == "Edit Menu":
-            # Tambahkan logika untuk mengedit menu
-            pass
+            nama_makanan = st.selectbox("Pilih Makanan yang Akan Diedit:", list(menu.keys()))
+            harga_baru = st.number_input("Harga Baru:", min_value=0, step=1000)
+            if st.button("Edit"):
+                if nama_makanan in menu:
+                    menu[nama_makanan] = harga_baru
+                    st.success(f"Harga {nama_makanan} berhasil diubah!")
+                else:
+                    st.error("Makanan tidak ditemukan di menu.")
+        
         elif pilihan == "Hapus Menu":
-            # Tambahkan logika untuk menghapus menu
-            pass
+            nama_makanan = st.selectbox("Pilih Makanan yang Akan Dihapus:", list(menu.keys()))
+            if st.button("Hapus"):
+                if nama_makanan in menu:
+                    del menu[nama_makanan]
+                    st.success(f"{nama_makanan} berhasil dihapus dari menu!")
+                else:
+                    st.error("Makanan tidak ditemukan di menu.")
+        
         elif pilihan == "Logout":
             break
         else:
