@@ -37,9 +37,12 @@ def pesan_makanan():
     st.header("Pesan Makanan")
     with st.form(key='order_form'):
         nama_pelanggan = st.text_input("Nama Pelanggan:")
-        if not nama_pelanggan:
-            st.warning("Silakan masukkan nama pelanggan.")
-            return None, None, None
+        if st.form_submit_button("Submit"):
+            not nama_pelanggan:
+                st.warning("Silakan masukkan nama pelanggan.")
+                return None, None, None
+            else: 
+               st.error("Login admin gagal.")
 
         tampilkan_menu()
         pesanan = {}
