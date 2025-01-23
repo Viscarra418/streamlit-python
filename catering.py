@@ -11,14 +11,16 @@ import streamlit as st
 import pandas as pd
 import numpy as np
 
-menu = {
-    "Nasi Goreng": 25000,
-    "Mie Goreng": 20000,
-    "Ayam Geprek": 30000,
-    "Sate Ayam": 35000,
-    "Es Teh Manis": 5000,
-    "Jus Jeruk": 10000,
-}
+# Initialize the menu in session state if not already done
+if 'menu' not in st.session_state:
+    st.session_state['menu'] = {
+        "Nasi Goreng": 25000,
+        "Mie Goreng": 20000,
+        "Ayam Geprek": 30000,
+        "Sate Ayam": 35000,
+        "Es Teh Manis": 5000,
+        "Jus Jeruk": 10000,
+    }
 
 subscribers = [
     {"name": "Budi", "email": "budi@example.com"},
@@ -28,7 +30,7 @@ subscribers = [
 
 def tampilkan_menu():
     st.write("Menu Katering:")
-    for item, harga in menu.items():
+    for item, harga in st.session_state['menu'].items():
         st.write(f"- {item}: Rp{harga:,}")
 
 def pesan_makanan():
@@ -38,7 +40,7 @@ def pesan_makanan():
         item = st.text_input("Masukkan nama makanan (atau ketik 'selesai' untuk selesai): ", key=f"item_{len(pesanan)}")
         if item.lower() == "selesai":
             break
-        if item in menu:
+        if item in st.session_state['menu']:
             jumlah = st.number_input(f"Masukkan jumlah {item}:", min_value=1, step=1, key=f"jumlah_{item}")
             pesanan[item] = jumlah
         else:
@@ -48,7 +50,7 @@ def pesan_makanan():
 def hitung_total_harga(pesanan):
     total_harga = 0
     for item, jumlah in pesanan.items():
-        total_harga += menu[item] * jumlah
+        total_harga += st.session_state['menu'][item] * jumlah
     return total_harga
 
 def tampilkan_pesanan(pesanan):
@@ -82,26 +84,26 @@ def menu_admin():
         harga_makanan = st.number_input("Harga Makanan Baru:", min_value=0, step=1000)
         if st.button("Tambah"):
             if nama_makanan and harga_makanan:
-                menu[nama_makanan] = harga_makanan
+                st.session_state['menu'][nama_makanan] = harga_makanan
                 st.success(f"{nama_makanan} berhasil ditambahkan ke menu!")
             else:
                 st.error("Nama dan harga makanan harus diisi.")
     
     elif pilihan == "Edit Menu":
-        nama_makanan = st.selectbox("Pilih Makanan yang Akan Diedit:", list(menu.keys()))
+        nama_makanan = st.selectbox("Pilih Makanan yang Akan Diedit:", list(st.session_state['menu'].keys()))
         harga_baru = st.number_input("Harga Baru:", min_value=0, step=1000)
         if st.button("Edit"):
-            if nama_makanan in menu:
-                menu[nama_makanan] = harga_baru
+            if nama_makanan in st.session_state['menu']:
+                st.session_state['menu'][nama_makanan] = harga_baru
                 st.success(f"Harga {nama_makanan} berhasil diubah!")
             else:
                 st.error("Makanan tidak ditemukan di menu.")
     
     elif pilihan == "Hapus Menu":
-        nama_makanan = st.selectbox("Pilih Makanan yang Akan Dihapus:", list(menu.keys()))
+        nama_makanan = st.selectbox("Pilih Makanan yang Akan Dihapus:", list(st.session_state['menu'].keys()))
         if st.button("Hapus"):
-            if nama_makanan in menu:
-                del menu[nama_makanan]
+            if nama_makanan in st.session_state['menu']:
+                del st.session_state['menu'][nama_makanan]
                 st.success(f"{nama_makanan} berhasil dihapus dari menu!")
             else:
                 st.error("Makanan tidak ditemukan di menu.")
