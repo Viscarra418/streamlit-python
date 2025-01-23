@@ -35,29 +35,33 @@ def tampilkan_menu():
 
 def pesan_makanan():
     st.header("Pesan Makanan")
-    nama_pelanggan = st.text_input("Nama Pelanggan:")
-    if not nama_pelanggan:
-        st.warning("Silakan masukkan nama pelanggan.")
-        return None, None
+    with st.form(key='order_form'):
+        nama_pelanggan = st.text_input("Nama Pelanggan:")
+        if not nama_pelanggan:
+            st.warning("Silakan masukkan nama pelanggan.")
+            return None, None, None
 
-    tampilkan_menu()
-    pesanan = {}
-    while True:
-        item = st.text_input("Masukkan nama makanan (atau ketik 'selesai' untuk selesai): ", key=f"item_{len(pesanan)}_{np.random.randint(1000)}")
-        if item.lower() == "selesai":
-            break
-        if item in st.session_state['menu']:
-            jumlah = st.number_input(f"Masukkan jumlah {item}:", min_value=1, step=1, key=f"jumlah_{item}_{np.random.randint(1000)}")
-            pesanan[item] = jumlah
-        else:
-            st.error("Makanan tidak ditemukan di menu.")
-    
-    metode_pembayaran = st.selectbox("Pilih Metode Pembayaran:", ["Tunai", "Kartu Kredit", "Transfer Bank", "E-Wallet"])
-    if not metode_pembayaran:
-        st.warning("Silakan pilih metode pembayaran.")
-        return None, None
+        tampilkan_menu()
+        pesanan = {}
+        item = st.selectbox("Pilih makanan:", [""] + list(st.session_state['menu'].keys()))
+        if item:
+            jumlah = st.number_input(f"Masukkan jumlah {item}:", min_value=1, step=1)
+            if st.form_submit_button("Tambah ke Pesanan"):
+                if item in pesanan:
+                    pesanan[item] += jumlah
+                else:
+                    pesanan[item] = jumlah
 
-    return nama_pelanggan, pesanan, metode_pembayaran
+        metode_pembayaran = st.selectbox("Pilih Metode Pembayaran:", ["Tunai", "Kartu Kredit", "Transfer Bank", "E-Wallet"])
+        if not metode_pembayaran:
+            st.warning("Silakan pilih metode pembayaran.")
+            return None, None, None
+
+        submit_button = st.form_submit_button(label='Selesaikan Pesanan')
+        if submit_button:
+            return nama_pelanggan, pesanan, metode_pembayaran
+
+    return None, None, None
 
 def hitung_total_harga(pesanan):
     total_harga = 0
