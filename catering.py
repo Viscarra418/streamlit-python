@@ -37,11 +37,11 @@ def pesan_makanan():
     tampilkan_menu()
     pesanan = {}
     while True:
-        item = st.text_input("Masukkan nama makanan (atau ketik 'selesai' untuk selesai): ", key=f"item_{len(pesanan)}")
+        item = st.text_input("Masukkan nama makanan (atau ketik 'selesai' untuk selesai): ", key=f"item_{len(pesanan)}_{np.random.randint(1000)}")
         if item.lower() == "selesai":
             break
         if item in st.session_state['menu']:
-            jumlah = st.number_input(f"Masukkan jumlah {item}:", min_value=1, step=1, key=f"jumlah_{item}")
+            jumlah = st.number_input(f"Masukkan jumlah {item}:", min_value=1, step=1, key=f"jumlah_{item}_{np.random.randint(1000)}")
             pesanan[item] = jumlah
         else:
             st.error("Makanan tidak ditemukan di menu.")
